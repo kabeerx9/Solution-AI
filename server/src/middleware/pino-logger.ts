@@ -67,3 +67,6 @@ export const loggerMiddleware = (req: Request, res: Response, next: NextFunction
   req.log = logger; // Attach logger to request object
   next();
 };
+
+// Export the logger instance for use in other modules
+export { logger };

@@ -1,102 +1,148 @@
-import { NextFunction, Request, Response } from 'express';
-import jwt, { Secret } from 'jsonwebtoken';
-import { unifiedResponse } from 'uni-response';
+import type { Request, Response, NextFunction } from 'express';
+import { clerkClient } from '@clerk/clerk-sdk-node';
+import { db } from '@/config/database';
+import { logger } from '@/utils/logger';
 
-import { env } from '../config/env-config';
-
-// Environment variable for JWT secret
-const secret: Secret = env.JWT_SECRET as string;
-
-// AuthPayload interface
-interface AuthPayload {
-  userId: string;
-  role: string;
-  dealerId: string;
-}
-
-// Augment the Express Request object to include custom properties
+// Extend Express Request to include user data
 declare global {
   namespace Express {
     interface Request {
-      userId?: string;
-      role?: string;
-      dealerId?: string;
+      business?: {
+        id: string;
+        clerkId: string;
+        name: string;
+        apiKey: string;
+      };
     }
   }
 }
 
 /**
- * Authentication Service Class
- * Contains methods for authentication and role-based access control.
+ * Clerk JWT Authentication Middleware
+ * Validates Clerk session tokens for Business (B2B) users
  */
-class AuthService {
-  private secret: Secret;
+export const clerkAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const authHeader = req.headers.authorization;
 
-  constructor(secret: Secret) {
-    this.secret = secret;
-  }
-
-  /**
-   * Authenticate and validate the JWT token
-   */
-  public auth(req: Request, res: Response, next: NextFunction): void {
-    const token = req.headers.authorization?.split(' ')[1];
-
-    if (!token) {
-      res.status(401).json(unifiedResponse(false, 'No token provided'));
-      return; // Ensures the middleware ends
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'Missing or invalid authorization token',
+      });
     }
 
-    try {
-      const decodedToken = jwt.verify(token, this.secret) as AuthPayload;
-      req.userId = decodedToken.userId;
-      req.role = decodedToken.role;
-      req.dealerId = decodedToken.dealerId;
+    const token = authHeader.split(' ')[1];
 
-      next(); // Call the next middleware
-    } catch (error) {
-      res.status(401).json(unifiedResponse(false, 'Invalid token'));
-      return; // Ensures the middleware ends
+    // Verify Clerk session token
+    const session = await clerkClient.sessions.verifySession(
+      token,
+      token,
+    );
+
+    if (!session || !session.userId) {
+      return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'Invalid session',
+      });
     }
-  }
 
-  /**
-   * Check if the user has the required role(s)
-   */
-  public checkUserRole(allowedRoles: string[]) {
-    return (req: Request, res: Response, next: NextFunction): void => {
-      const token = req.headers.authorization?.split(' ')[1];
+    // Find or create business for this Clerk user
+    let business = await db.business.findUnique({
+      where: { clerkId: session.userId },
+    });
 
-      if (!token) {
-        res.status(401).json(unifiedResponse(false, 'No token provided'));
-        return;
-      }
+    if (!business) {
+      // Auto-create business on first login
+      const user = await clerkClient.users.getUser(session.userId);
 
-      try {
-        const decodedToken = jwt.verify(token, this.secret) as AuthPayload;
+      business = await db.business.create({
+        data: {
+          clerkId: session.userId,
+          name:
+            user.firstName && user.lastName
+              ? `${user.firstName} ${user.lastName}`
+              : 'New Business',
+          email: user.emailAddresses[0]?.emailAddress,
+        },
+      });
 
-        if (allowedRoles.includes(decodedToken.role)) {
-          req.userId = decodedToken.userId;
-          req.role = decodedToken.role;
-          req.dealerId = decodedToken.dealerId;
+      logger.info({ businessId: business.id }, 'New business created from Clerk');
+    }
 
-          next();
-          return;
-        }
-
-        res.status(403).json(unifiedResponse(false, 'Forbidden: Insufficient permissions'));
-        return;
-      } catch (error) {
-        res.status(401).json(unifiedResponse(false, 'Invalid token'));
-        return;
-      }
+    // Attach business to request
+    req.business = {
+      id: business.id,
+      clerkId: business.clerkId,
+      name: business.name,
+      apiKey: business.apiKey,
     };
+
+    next();
+  } catch (error) {
+    logger.error({ error }, 'Clerk authentication error');
+    return res.status(401).json({
+      error: 'Unauthorized',
+      message: 'Authentication failed',
+    });
   }
-}
+};
 
-// Instantiate AuthService
-const authService = new AuthService(secret);
+/**
+ * API Key Authentication Middleware
+ * For internal services and admin endpoints
+ */
+export const apiKeyAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const apiKey = req.headers['x-api-key'] as string;
 
-// Export methods for use in routes
-export const auth = authService.auth.bind(authService);
-export const checkUserRole = authService.checkUserRole.bind(authService);
+    if (!apiKey) {
+      return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'API key required',
+      });
+    }
+
+    // Check if it's the internal system API key
+    if (apiKey === process.env.INTERNAL_API_KEY) {
+      // Internal system access (no business context)
+      return next();
+    }
+
+    // Check if it's a business API key
+    const business = await db.business.findUnique({
+      where: { apiKey },
+    });
+
+    if (!business || !business.active) {
+      return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'Invalid API key',
+      });
+    }
+
+    // Attach business to request
+    req.business = {
+      id: business.id,
+      clerkId: business.clerkId,
+      name: business.name,
+      apiKey: business.apiKey,
+    };
+
+    next();
+  } catch (error) {
+    logger.error({ error }, 'API key authentication error');
+    return res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Authentication failed',
+    });
+  }
+};
