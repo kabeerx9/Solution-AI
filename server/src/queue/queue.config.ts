@@ -4,7 +4,7 @@
  */
 
 import { Queue, QueueOptions, WorkerOptions } from 'bullmq';
-import { getRedisClient } from '@/config/redis';
+import { getRedisClient, getBullRedisClient } from '@/config/redis';
 import { logger } from '@/utils/logger';
 
 // Queue names
@@ -60,11 +60,11 @@ export const getQueue = (name: string, options?: Partial<QueueOptions>): Queue =
  * Get default worker options
  */
 export const getDefaultWorkerOptions = (): WorkerOptions => {
-  const connection = getRedisClient();
+  const connection = getBullRedisClient();
   if (!connection) {
     throw new Error('Redis connection is required for worker options');
   }
-  
+
   return {
     connection,
     concurrency: 5,
