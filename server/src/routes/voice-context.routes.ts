@@ -98,7 +98,9 @@ router.get('/full-context', async (req, res) => {
             db.conversation.findMany({
                 where: {
                     customerId: customer.id,
-                    channel: { not: 'voice' }, // Get chat history to inform voice
+                    channel: {
+                        not: 'VOICE'
+                    }
                 },
                 orderBy: { updatedAt: 'desc' },
                 take: 3,
@@ -155,8 +157,15 @@ router.get('/full-context', async (req, res) => {
         return res.json(fullContext);
 
     } catch (error) {
-        logger.error({ error }, 'Failed to load full context');
-        return res.status(500).json({ error: 'Failed to load context' });
+        logger.error({ 
+            error: error instanceof Error ? error.message : error,
+            stack: error instanceof Error ? error.stack : undefined,
+            phoneNumber: maskPhone(phoneNumber)
+        }, 'Failed to load full context');
+        return res.status(500).json({ 
+            error: 'Failed to load context',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        });
     }
 });
 
