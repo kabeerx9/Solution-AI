@@ -13,6 +13,7 @@ import agentRoutes from './features/voice/agent.routes';
 import apiRoutes from './routes/api.routes';
 import webhookRoutes from './routes/webhooks.routes';
 import healthRoutes from './routes/health.routes';
+import voiceContextRoutes from './routes/voice-context.routes';
 
 // Middleware
 import { requestTracing } from './middleware/request-tracing.middleware';
@@ -73,6 +74,7 @@ app.use('/health', healthRoutes);
 
 app.use('/api', apiRoutes);
 app.use('/api/agent', agentRoutes);
+app.use('/api/agent', voiceContextRoutes);
 app.use('/webhooks', webhookRoutes);
 
 // Root health check
