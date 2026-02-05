@@ -3,7 +3,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '@/middleware/auth.middleware';
+import { clerkAuth } from '@/middleware/auth.middleware';
 import { BrandingService, DomainService } from '@/features/white-label';
 import { resSuccess, resError } from '@/utils/response.utils';
 import { z } from 'zod';
@@ -18,7 +18,7 @@ const router = Router();
  * Get branding configuration
  * GET /api/white-label/branding
  */
-router.get('/branding', requireAuth, async (req: Request, res: Response) => {
+router.get('/branding', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
 
@@ -34,7 +34,7 @@ router.get('/branding', requireAuth, async (req: Request, res: Response) => {
  * Update branding colors
  * PUT /api/white-label/branding/colors
  */
-router.put('/branding/colors', requireAuth, async (req: Request, res: Response) => {
+router.put('/branding/colors', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         
@@ -60,7 +60,7 @@ router.put('/branding/colors', requireAuth, async (req: Request, res: Response) 
  * Upload logo
  * POST /api/white-label/branding/logo
  */
-router.post('/branding/logo', requireAuth, async (req: Request, res: Response) => {
+router.post('/branding/logo', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         const type = (req.query.type as 'light' | 'dark') || 'light';
@@ -86,7 +86,7 @@ router.post('/branding/logo', requireAuth, async (req: Request, res: Response) =
  * Update custom CSS
  * PUT /api/white-label/branding/css
  */
-router.put('/branding/css', requireAuth, async (req: Request, res: Response) => {
+router.put('/branding/css', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         
@@ -108,7 +108,7 @@ router.put('/branding/css', requireAuth, async (req: Request, res: Response) => 
  * Update email templates
  * PUT /api/white-label/branding/email-templates
  */
-router.put('/branding/email-templates', requireAuth, async (req: Request, res: Response) => {
+router.put('/branding/email-templates', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         
@@ -132,7 +132,7 @@ router.put('/branding/email-templates', requireAuth, async (req: Request, res: R
  * Update chat widget settings
  * PUT /api/white-label/branding/chat-widget
  */
-router.put('/branding/chat-widget', requireAuth, async (req: Request, res: Response) => {
+router.put('/branding/chat-widget', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         
@@ -157,7 +157,7 @@ router.put('/branding/chat-widget', requireAuth, async (req: Request, res: Respo
  * Get chat widget embed code
  * GET /api/white-label/branding/embed-code
  */
-router.get('/branding/embed-code', requireAuth, async (req: Request, res: Response) => {
+router.get('/branding/embed-code', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
 
@@ -173,7 +173,7 @@ router.get('/branding/embed-code', requireAuth, async (req: Request, res: Respon
  * Generate CSS variables
  * GET /api/white-label/branding/css-variables
  */
-router.get('/branding/css-variables', requireAuth, async (req: Request, res: Response) => {
+router.get('/branding/css-variables', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
 
@@ -194,7 +194,7 @@ router.get('/branding/css-variables', requireAuth, async (req: Request, res: Res
  * Get custom domains
  * GET /api/white-label/domains
  */
-router.get('/domains', requireAuth, async (req: Request, res: Response) => {
+router.get('/domains', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
 
@@ -210,7 +210,7 @@ router.get('/domains', requireAuth, async (req: Request, res: Response) => {
  * Add custom domain
  * POST /api/white-label/domains
  */
-router.post('/domains', requireAuth, async (req: Request, res: Response) => {
+router.post('/domains', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         
@@ -235,7 +235,7 @@ router.post('/domains', requireAuth, async (req: Request, res: Response) => {
  * Get domain verification instructions
  * GET /api/white-label/domains/:id/verify
  */
-router.get('/domains/:id/verify', requireAuth, async (req: Request, res: Response) => {
+router.get('/domains/:id/verify', clerkAuth, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
@@ -251,7 +251,7 @@ router.get('/domains/:id/verify', requireAuth, async (req: Request, res: Respons
  * Verify domain
  * POST /api/white-label/domains/:id/verify
  */
-router.post('/domains/:id/verify', requireAuth, async (req: Request, res: Response) => {
+router.post('/domains/:id/verify', clerkAuth, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
@@ -271,7 +271,7 @@ router.post('/domains/:id/verify', requireAuth, async (req: Request, res: Respon
  * Remove custom domain
  * DELETE /api/white-label/domains/:id
  */
-router.delete('/domains/:id', requireAuth, async (req: Request, res: Response) => {
+router.delete('/domains/:id', clerkAuth, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 

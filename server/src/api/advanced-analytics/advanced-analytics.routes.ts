@@ -3,7 +3,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '@/middleware/auth.middleware';
+import { clerkAuth } from '@/middleware/auth.middleware';
 import { FunnelAnalyzerService, CohortAnalyzerService, PredictionService } from '@/analytics/advanced';
 import { resSuccess, resError } from '@/utils/response.utils';
 import { z } from 'zod';
@@ -18,7 +18,7 @@ const router = Router();
  * Get conversion funnel
  * GET /api/advanced-analytics/funnel
  */
-router.get('/funnel', requireAuth, async (req: Request, res: Response) => {
+router.get('/funnel', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         const days = parseInt(req.query.days as string) || 30;
@@ -38,7 +38,7 @@ router.get('/funnel', requireAuth, async (req: Request, res: Response) => {
  * Compare funnels over time
  * POST /api/advanced-analytics/funnel/compare
  */
-router.post('/funnel/compare', requireAuth, async (req: Request, res: Response) => {
+router.post('/funnel/compare', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         
@@ -77,7 +77,7 @@ router.post('/funnel/compare', requireAuth, async (req: Request, res: Response) 
  * Get cohort analysis
  * GET /api/advanced-analytics/cohorts
  */
-router.get('/cohorts', requireAuth, async (req: Request, res: Response) => {
+router.get('/cohorts', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         const months = parseInt(req.query.months as string) || 12;
@@ -97,7 +97,7 @@ router.get('/cohorts', requireAuth, async (req: Request, res: Response) => {
  * Get LTV distribution
  * GET /api/advanced-analytics/ltv-distribution
  */
-router.get('/ltv-distribution', requireAuth, async (req: Request, res: Response) => {
+router.get('/ltv-distribution', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
 
@@ -115,7 +115,7 @@ router.get('/ltv-distribution', requireAuth, async (req: Request, res: Response)
  * Get behavior patterns
  * GET /api/advanced-analytics/behavior-patterns
  */
-router.get('/behavior-patterns', requireAuth, async (req: Request, res: Response) => {
+router.get('/behavior-patterns', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         const segment = req.query.segment as 'high_value' | 'churned' | 'active' || 'high_value';
@@ -139,7 +139,7 @@ router.get('/behavior-patterns', requireAuth, async (req: Request, res: Response
  * Predict churn risk for customer
  * GET /api/advanced-analytics/predictions/churn/:customerId
  */
-router.get('/predictions/churn/:customerId', requireAuth, async (req: Request, res: Response) => {
+router.get('/predictions/churn/:customerId', clerkAuth, async (req: Request, res: Response) => {
     try {
         const { customerId } = req.params;
         const businessId = (req as any).businessId;
@@ -159,7 +159,7 @@ router.get('/predictions/churn/:customerId', requireAuth, async (req: Request, r
  * Predict customer LTV
  * GET /api/advanced-analytics/predictions/ltv/:customerId
  */
-router.get('/predictions/ltv/:customerId', requireAuth, async (req: Request, res: Response) => {
+router.get('/predictions/ltv/:customerId', clerkAuth, async (req: Request, res: Response) => {
     try {
         const { customerId } = req.params;
         const businessId = (req as any).businessId;
@@ -179,7 +179,7 @@ router.get('/predictions/ltv/:customerId', requireAuth, async (req: Request, res
  * Get next best action for customer
  * GET /api/advanced-analytics/predictions/next-action/:customerId
  */
-router.get('/predictions/next-action/:customerId', requireAuth, async (req: Request, res: Response) => {
+router.get('/predictions/next-action/:customerId', clerkAuth, async (req: Request, res: Response) => {
     try {
         const { customerId } = req.params;
         const businessId = (req as any).businessId;
@@ -199,7 +199,7 @@ router.get('/predictions/next-action/:customerId', requireAuth, async (req: Requ
  * Get business-wide predictions
  * GET /api/advanced-analytics/predictions/business
  */
-router.get('/predictions/business', requireAuth, async (req: Request, res: Response) => {
+router.get('/predictions/business', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
 
@@ -221,7 +221,7 @@ router.get('/predictions/business', requireAuth, async (req: Request, res: Respo
  * Get advanced analytics dashboard
  * GET /api/advanced-analytics/dashboard
  */
-router.get('/dashboard', requireAuth, async (req: Request, res: Response) => {
+router.get('/dashboard', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         const days = parseInt(req.query.days as string) || 30;

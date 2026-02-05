@@ -4,7 +4,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '@/middleware/auth.middleware';
+import { clerkAuth } from '@/middleware/auth.middleware';
 import { db } from '@/config/database';
 import {
     SentimentAnalyzerService,
@@ -24,7 +24,7 @@ const router = Router();
  */
 router.post(
     '/sentiment',
-    requireAuth,
+    clerkAuth,
     async (req: Request, res: Response) => {
         try {
             const schema = z.object({
@@ -58,7 +58,7 @@ router.post(
  */
 router.get(
     '/sentiment/trend/:customerId',
-    requireAuth,
+    clerkAuth,
     async (req: Request, res: Response) => {
         try {
             const { customerId } = req.params;
@@ -84,7 +84,7 @@ router.get(
  */
 router.post(
     '/intent',
-    requireAuth,
+    clerkAuth,
     async (req: Request, res: Response) => {
         try {
             const schema = z.object({
@@ -118,7 +118,7 @@ router.post(
  */
 router.get(
     '/intent/analytics',
-    requireAuth,
+    clerkAuth,
     async (req: Request, res: Response) => {
         try {
             const businessId = (req as any).businessId;
@@ -142,7 +142,7 @@ router.get(
  */
 router.post(
     '/language/detect',
-    requireAuth,
+    clerkAuth,
     async (req: Request, res: Response) => {
         try {
             const schema = z.object({
@@ -172,7 +172,7 @@ router.post(
  */
 router.post(
     '/language/translate',
-    requireAuth,
+    clerkAuth,
     async (req: Request, res: Response) => {
         try {
             const schema = z.object({
@@ -204,7 +204,7 @@ router.post(
  */
 router.get(
     '/dashboard',
-    requireAuth,
+    clerkAuth,
     async (req: Request, res: Response) => {
         try {
             const businessId = (req as any).businessId;

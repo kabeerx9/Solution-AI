@@ -1,5 +1,5 @@
 import { Queue, Worker } from 'bullmq';
-import { getRedisClient } from '@/config/redis';
+import { getRedisClient, getBullRedisClient } from '@/config/redis';
 import { MemoryService } from '@/features/memory/memory.service';
 import { logger } from '@/utils/logger';
 
@@ -8,7 +8,7 @@ let embeddingQueue: Queue | null = null;
 
 export const getEmbeddingQueue = (): Queue => {
     if (!embeddingQueue) {
-        const connection = getRedisClient();
+        const connection = getBullRedisClient();
         embeddingQueue = new Queue('embeddings', { connection });
     }
     return embeddingQueue;
@@ -19,7 +19,7 @@ export const getEmbeddingQueue = (): Queue => {
  * This runs separately to not block API responses
  */
 export const startEmbeddingWorker = () => {
-    const connection = getRedisClient();
+    const connection = getBullRedisClient();
 
     const worker = new Worker(
         'embeddings',
@@ -82,7 +82,7 @@ let cacheQueue: Queue | null = null;
 
 export const getCampaignQueue = (): Queue => {
     if (!campaignQueue) {
-        const connection = getRedisClient();
+        const connection = getBullRedisClient();
         campaignQueue = new Queue('campaigns', { connection });
     }
     return campaignQueue;
@@ -90,7 +90,7 @@ export const getCampaignQueue = (): Queue => {
 
 export const getCacheQueue = (): Queue => {
     if (!cacheQueue) {
-        const connection = getRedisClient();
+        const connection = getBullRedisClient();
         cacheQueue = new Queue('cache', { connection });
     }
     return cacheQueue;

@@ -3,7 +3,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '@/middleware/auth.middleware';
+import { clerkAuth } from '@/middleware/auth.middleware';
 import { CRMFactory, WebhookOutService, CRMProvider } from '@/integrations';
 import { resSuccess, resError } from '@/utils/response.utils';
 import { z } from 'zod';
@@ -16,7 +16,7 @@ const router = Router();
  * Get CRM configuration
  * GET /api/crm/config
  */
-router.get('/config', requireAuth, async (req: Request, res: Response) => {
+router.get('/config', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         
@@ -52,7 +52,7 @@ router.get('/config', requireAuth, async (req: Request, res: Response) => {
  * Configure CRM integration
  * POST /api/crm/config
  */
-router.post('/config', requireAuth, async (req: Request, res: Response) => {
+router.post('/config', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         
@@ -125,7 +125,7 @@ router.post('/config', requireAuth, async (req: Request, res: Response) => {
  * Sync customer to CRM
  * POST /api/crm/sync/:customerId
  */
-router.post('/sync/:customerId', requireAuth, async (req: Request, res: Response) => {
+router.post('/sync/:customerId', clerkAuth, async (req: Request, res: Response) => {
     try {
         const { customerId } = req.params;
         const businessId = (req as any).businessId;
@@ -161,7 +161,7 @@ router.post('/sync/:customerId', requireAuth, async (req: Request, res: Response
  * Create opportunity in CRM
  * POST /api/crm/opportunities
  */
-router.post('/opportunities', requireAuth, async (req: Request, res: Response) => {
+router.post('/opportunities', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         
@@ -196,7 +196,7 @@ router.post('/opportunities', requireAuth, async (req: Request, res: Response) =
  * Create case/ticket in CRM
  * POST /api/crm/cases
  */
-router.post('/cases', requireAuth, async (req: Request, res: Response) => {
+router.post('/cases', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         
@@ -231,7 +231,7 @@ router.post('/cases', requireAuth, async (req: Request, res: Response) => {
  * Test CRM connection
  * GET /api/crm/test
  */
-router.get('/test', requireAuth, async (req: Request, res: Response) => {
+router.get('/test', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
 
@@ -257,7 +257,7 @@ router.get('/test', requireAuth, async (req: Request, res: Response) => {
  * Configure outbound webhook
  * POST /api/crm/webhooks
  */
-router.post('/webhooks', requireAuth, async (req: Request, res: Response) => {
+router.post('/webhooks', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
         
@@ -302,7 +302,7 @@ router.post('/webhooks', requireAuth, async (req: Request, res: Response) => {
  * Send test webhook
  * POST /api/crm/webhooks/test
  */
-router.post('/webhooks/test', requireAuth, async (req: Request, res: Response) => {
+router.post('/webhooks/test', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
 

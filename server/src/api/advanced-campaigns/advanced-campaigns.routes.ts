@@ -4,7 +4,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '@/middleware/auth.middleware';
+import { clerkAuth } from '@/middleware/auth.middleware';
 import { db } from '@/config/database';
 import { ABTestingService, PersonalizationService } from '@/features/campaigns-advanced';
 import { resSuccess, resError } from '@/utils/response.utils';
@@ -20,7 +20,7 @@ const router = Router();
  * Create A/B test
  * POST /api/advanced-campaigns/ab-tests
  */
-router.post('/ab-tests', requireAuth, async (req: Request, res: Response) => {
+router.post('/ab-tests', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
 
@@ -58,7 +58,7 @@ router.post('/ab-tests', requireAuth, async (req: Request, res: Response) => {
  * Get A/B tests for business
  * GET /api/advanced-campaigns/ab-tests
  */
-router.get('/ab-tests', requireAuth, async (req: Request, res: Response) => {
+router.get('/ab-tests', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
 
@@ -78,7 +78,7 @@ router.get('/ab-tests', requireAuth, async (req: Request, res: Response) => {
  * Get A/B test details
  * GET /api/advanced-campaigns/ab-tests/:id
  */
-router.get('/ab-tests/:id', requireAuth, async (req: Request, res: Response) => {
+router.get('/ab-tests/:id', clerkAuth, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
@@ -100,7 +100,7 @@ router.get('/ab-tests/:id', requireAuth, async (req: Request, res: Response) => 
  * Start A/B test
  * POST /api/advanced-campaigns/ab-tests/:id/start
  */
-router.post('/ab-tests/:id/start', requireAuth, async (req: Request, res: Response) => {
+router.post('/ab-tests/:id/start', clerkAuth, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
@@ -116,7 +116,7 @@ router.post('/ab-tests/:id/start', requireAuth, async (req: Request, res: Respon
  * Get A/B test results
  * GET /api/advanced-campaigns/ab-tests/:id/results
  */
-router.get('/ab-tests/:id/results', requireAuth, async (req: Request, res: Response) => {
+router.get('/ab-tests/:id/results', clerkAuth, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
@@ -136,7 +136,7 @@ router.get('/ab-tests/:id/results', requireAuth, async (req: Request, res: Respo
  * Personalize message for customer
  * POST /api/advanced-campaigns/personalize
  */
-router.post('/personalize', requireAuth, async (req: Request, res: Response) => {
+router.post('/personalize', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
 
@@ -165,7 +165,7 @@ router.post('/personalize', requireAuth, async (req: Request, res: Response) => 
  * Get recommendations for customer
  * GET /api/advanced-campaigns/recommendations/:customerId
  */
-router.get('/recommendations/:customerId', requireAuth, async (req: Request, res: Response) => {
+router.get('/recommendations/:customerId', clerkAuth, async (req: Request, res: Response) => {
     try {
         const { customerId } = req.params;
         const businessId = (req as any).businessId;
@@ -185,7 +185,7 @@ router.get('/recommendations/:customerId', requireAuth, async (req: Request, res
  * Segment customers
  * POST /api/advanced-campaigns/segment
  */
-router.post('/segment', requireAuth, async (req: Request, res: Response) => {
+router.post('/segment', clerkAuth, async (req: Request, res: Response) => {
     try {
         const businessId = (req as any).businessId;
 

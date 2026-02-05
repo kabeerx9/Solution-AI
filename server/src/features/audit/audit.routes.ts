@@ -4,7 +4,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '@/middleware/auth.middleware';
+import { clerkAuth } from '@/middleware/auth.middleware';
 import { AuditLoggerService, AuditAction, AuditSeverity } from './audit-logger.service';
 import { resSuccess, resError } from '@/utils/response.utils';
 import { z } from 'zod';
@@ -17,7 +17,7 @@ const router = Router();
  */
 router.get(
     '/logs',
-    requireAuth,
+    clerkAuth,
     async (req: Request, res: Response) => {
         try {
             const businessId = (req as any).businessId;
@@ -64,7 +64,7 @@ router.get(
  */
 router.get(
     '/resource/:resource/:id',
-    requireAuth,
+    clerkAuth,
     async (req: Request, res: Response) => {
         try {
             const { resource, id } = req.params;
@@ -90,7 +90,7 @@ router.get(
  */
 router.post(
     '/compliance-report',
-    requireAuth,
+    clerkAuth,
     async (req: Request, res: Response) => {
         try {
             const businessId = (req as any).businessId;
@@ -121,7 +121,7 @@ router.post(
  */
 router.get(
     '/stats',
-    requireAuth,
+    clerkAuth,
     async (req: Request, res: Response) => {
         try {
             const businessId = (req as any).businessId;
